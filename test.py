@@ -7,7 +7,7 @@ openai.api_base = "https://openaistkinno.openai.azure.com/"
 openai.api_version = "2023-07-01-preview"  # subject to change
 
 # Create a prompt
-prompt = "Once upon a time"
+prompt = "From where is Leonel Messi?"
 
 # Create the completion
 response = openai.ChatCompletion.create(
@@ -16,7 +16,7 @@ response = openai.ChatCompletion.create(
       "role": "system",
     "content": prompt
   }],
-  max_tokens=5
+  max_tokens=100
 )
 
 # Print the output
