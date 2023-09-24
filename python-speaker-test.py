@@ -1,4 +1,5 @@
 # Import the ZeroMQ module
+
 import zmq
 import openai
 import fitz
@@ -15,19 +16,19 @@ from softtek_llm.embeddings import OpenAIEmbeddings
 from softtek_llm.schemas import Filter
 import pandas as pd
 import os
-import  jpype     
+ 
 import  asposecells     
 
 
 
-# Load csv file
+# Load pdf file
+pdf_file_path = 'testFile.pdf'
 
-loader = CSVLoader(file_path='report.csv')  
-jpype.startJVM() 
-from asposecells.api import Workbook
-workbook = Workbook("report.csv")
-workbook.save("report.txt")
-jpype.shutdownJVM()
+pdf_document = fitz.open(pdf_file_path)
+pdf_text_content = ""
+for pagenumber in range(pdf_document.pageCount):
+    page = pdf_document.loadPage(pagenumber)
+    pdf_text_content += page.getText("text")
 
 # Create a context object
 context = zmq.Context()
@@ -44,29 +45,36 @@ sock = context.socket(zmq.REP)
 # Bind to the JavaScript client
 sock.bind("tcp://127.0.0.1:3000")
 
-# Receive a request message
-prompt = sock.recv()
+while True:
+    # Receive a request message
+    prompt = sock.recv()
 
-# Create a question-answering chain using the index
+    # Print the message
+    print("Received: %s" % prompt.decode())
 
-# Print the message
-print("Received: %s" % prompt.decode())
+    msg = prompt.decode()
 
-msg = prompt.decode()
+    # Include the PDF text content in the message to OpenAI
+    messages = [
+        {
+            "role": "system",
+            "content": "This is the PDF content:\n" + pdf_text_content
+        },
+        {
+            "role": "user",
+            "content": msg,
+        },
+    ]
 
-# Use the chain to generate a response based on the prompt as a question
-# Create the completion
-response = openai.ChatCompletion.create(
-  engine="InnovationGPT2",
-  messages=[{
-      "role": "system",
-    "content": msg
-  }],
-  max_tokens=1000
-)
+    # Create the completion using the combined messages
+    response = openai.ChatCompletion.create(
+        engine="InnovationGPT2",
+        messages=messages,
+        max_tokens=1000
+    )
 
-# Print the output
-print(response.choices[0].message.content)
+    # Print the output
+    print(response.choices[0].message.content)
 
-# Send a reply message
-sock.send_string(response.choices[0].message.content)
+    # Send a reply message
+    sock.send_string(response.choices[0].message.content)
