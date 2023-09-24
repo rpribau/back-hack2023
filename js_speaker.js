@@ -4,7 +4,7 @@ const sock = new zmq.Request();
 sock.connect("tcp://127.0.0.1:3000");
 
 // Send a request message
-sock.send("Quien eres tu?"); 
+sock.send("What is the latest revenue from GAAP from the information that we have?"); 
 
 // Configurar un tiempo de espera (por ejemplo, 10 segundos)
 const timeoutMilliseconds = 10000; // 10 segundos
