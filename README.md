@@ -2,7 +2,7 @@
 
 <img src = "https://i.imgur.com/WKqz6Xd.png">
 
-NOTE. THIS INCLUDES ALREADY THE FRONT END.
+NOTE. THIS INCLUDES ALREADY THE FRONT END USING Streamlit
 
 During HackMTY 2023, we created a search engine using the OpenAI API by uploading PDF, xlsx, docx, csv files and ask anything about the current information
 
